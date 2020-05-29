@@ -44,9 +44,12 @@
                 :underline="false"
                 @click="toEdit(scope.row.id)">修改信息</el-link>
               <em></em>
-              <el-link type="primary"
+              <el-link v-if="scope.row.appStatus == 0" type="primary"
                        :underline="false"
-                       @click="activate(scope.row.id)">开通移动端</el-link>
+                       @click="goActive(scope.row.system_no)">开通移动端</el-link>
+              <el-link v-else type="info"
+                       :underline="false"
+                       >已开通移动端</el-link>
               <em></em>
               <el-link type="primary"
                 :underline="false"
@@ -81,6 +84,10 @@
     <ys-modal-confirm ref="ysconfirm2"
       :confirmData="confirmData"
       v-on:confirmCalBak="toDel"></ys-modal-confirm>
+
+      <ys-modal-confirm ref="ysconfirm3"
+      :confirmData="confirmData"
+      v-on:confirmCalBak="toActive"></ys-modal-confirm>
 
     <!-- 表单模态框 -->
     <ys-modal-form ref="ysform"
@@ -475,7 +482,30 @@ export default {
       }).catch((rt) => {
       })
     },
-
+    /**
+     * [goActive 准备开通移动端]
+     * @param  {[Int]} id [用户ID]
+     * @return {[]} []
+     */
+    goActive (systemNo) {
+      let v = 4
+      const params = { system_no: systemNo }
+      console.log(this.confirmData)
+      this.$refs.ysconfirm3.toggleShow(params)
+      this.confirmData.v = v
+    },
+    /**
+     * [toDel 开通学生端]
+     * @param  {[Object]} _params [中转参数]
+     * @return {[]} []
+     */
+    toActive (_params) {
+      let $rt = this.$get('meiyu/compatibleBindSystemNo/', _params)
+      $rt.then((rt) => {
+        this.askDatas()
+      }).catch((rt) => {
+      })
+    },
     /**
      * [toFile 批量操作]
      * @param  {[Int]} v [操作方式]
