@@ -48,6 +48,7 @@
         </el-form-item>
 
         <el-form-item label="招募范围" prop="grade">
+          <div><el-checkbox @change="changeStepAll" v-model="isStepAll">所有年级班级</el-checkbox></div>
             <div v-for="(step,index) in stepArr" :key="index">
               <el-select placeholder="请选择阶段"
               @change="changeStep(step.step,index)"
@@ -71,6 +72,9 @@
             </el-select>
              <div class="add-btn" v-if="index == 0" @click="addStep">
                <i class="el-icon-plus"></i>
+             </div>
+              <div class="add-btn"  @click="delStep(index)">
+               <i class="el-icon-minus"></i>
              </div>
              <div class="class-list">
                <template v-for="(item,index2) in step.class" >
@@ -181,6 +185,7 @@ export default {
         img_url: ''
       },
       // 阶段数组
+      isStepAll: false,
       steps: [{value: 0, label: '小学'}, {value: 1, label: '初中'}, {value: 2, label: '高中'}],
       stepArr: [{step: '', grade: '', grades: [], class: []}],
       // 表单验证
@@ -386,7 +391,58 @@ export default {
     },
     // 增加阶段 年级
     addStep () {
+      if (this.isStepAll) { this.$err('当前已选择添加全部'); return }
       this.stepArr.push({step: '', grade: '', grades: [], class: []})
+    },
+    delStep (index) {
+      if (this.stepArr.length === 1) { this.$err('最后一项不准删除'); return }
+      this.stepArr.splice(index, 1)
+      this.isStepAll = false
+    },
+    changeStepAll (value) {
+      if (value) {
+        this.stepArr = []
+        this.room_list.forEach(item => {
+          let obj = {}
+          obj.grades = []
+          obj.grade = item.grade_key
+          obj.step = this.getStep(item.grade_key)
+          let grades = []
+          if (obj.step === 0) {
+            grades = [ 1, 2, 3, 4, 5, 6 ]
+          } else if (obj.step === 1) {
+            grades = [7, 8, 9]
+          } else if (obj.step === 2) {
+            grades = [10, 11, 12]
+          }
+          for (var i = 0; i < this.room_list.length; i++) {
+            for (var j = 0; j < grades.length; j++) {
+              // console.log('aaa', this.room_list[i].grade_key, grades[j])
+              if (this.room_list[i].grade_key === grades[j]) {
+                console.log('bb', i, this.room_list[i], grades[j])
+                obj.grades.push(this.room_list[i])
+              }
+            }
+          }
+          obj.class = item.rooms
+          obj.class.forEach(item2 => {
+            item2.active = true
+          })
+          this.stepArr.push(obj)
+        })
+        // this.stepArr = [{step: '', grade: '', grades: [], class: []}]
+      } else {
+        this.stepArr = [{step: '', grade: '', grades: [], class: []}]
+      }
+    },
+    getStep (n) {
+      if (n === 1 || n === 2 || n === 3 || n === 4 || n === 5 || n === 6) {
+        return 0
+      } else if (n === 7 || n === 8 || n === 9) {
+        return 1
+      } else {
+        return 2
+      }
     }
   },
   created () {
