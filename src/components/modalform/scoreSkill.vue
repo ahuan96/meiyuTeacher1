@@ -66,6 +66,11 @@ export default {
      * @return {[]} []
      */
     submitForm () {
+      let re = /^([0-9]|(10))$/
+      if (!re.test(this.params.score)) {
+        this.$err('请输入0-10的整数')
+        return
+      }
       let $rt = this.$post('student_certificate/set_score/', this.params)
       $rt.then((rt) => {
         this.$emit('formCalBak')

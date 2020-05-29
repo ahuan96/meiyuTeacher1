@@ -50,7 +50,7 @@
         <el-form-item label="招募范围" prop="grade">
           <div><el-checkbox @change="changeStepAll" v-model="isStepAll">所有年级班级</el-checkbox></div>
             <div v-for="(step,index) in stepArr" :key="index">
-              <el-select placeholder="请选择阶段"
+              <el-select placeholder="请选择阶段"  class="step-m"
               @change="changeStep(step.step,index)"
               v-model="step.step">
               <el-option
@@ -60,7 +60,7 @@
                 v-for="item in steps">
               </el-option>
             </el-select>
-            <el-select placeholder="请选择年级"
+            <el-select placeholder="请选择年级"  class="step-m"
               @change="changeGrade(index , step.grade)"
               v-model="step.grade">
               <el-option
